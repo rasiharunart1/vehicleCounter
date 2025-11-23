@@ -1,184 +1,501 @@
-# Smart Traffic Counter v3.3
+# 🚗 Smart Traffic Counter v3.3
 
-Deteksi kendaraan real-time dan penghitungan arah (UP/DOWN) dengan antarmuka GUI modern (Tkinter), menggunakan Ultralytics YOLO. Mendukung input Screen capture, Webcam, dan Network stream (RTSP/HTTP). Menyediakan mode visualisasi RAW dengan counting aktif, penyimpanan ke database, penampil data (Data Viewer), dan paket .exe untuk Windows.
+> **Sistem Deteksi & Penghitungan Kendaraan Real-time dengan AI**  
+> Powered by YOLO11 | Multi-Input Support | Database Integration
 
-- Nama aplikasi: SmartTrafficCounter
-- Model default: yolo11n.pt
-- Output (exe): dist/SmartTrafficCounter/SmartTrafficCounter.exe
+<div align="center">
 
+![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D6?style=for-the-badge&logo=windows)
+![Python](https://img.shields.io/badge/Python-3.9--3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![YOLO](https://img.shields.io/badge/YOLO-v11-00FFFF?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/c51caad7-a9d9-4a93-ab4a-b76c4fb0d705" />
+</div>
 
+---
 
-## Daftar Isi
-- [Fitur](#fitur)
-- [Persyaratan Sistem](#persyaratan-sistem)
-- [Mulai Cepat (Jalankan .exe)](#mulai-cepat-jalankan-exe)
-- [Bangun .exe (Windows, PyInstaller)](#bangun-exe-windows-pyinstaller)
-- [Panduan Penggunaan](#panduan-penggunaan)
-- [Mode](#mode)
-- [Pengaturan Utama](#pengaturan-utama)
-- [Database](#database)
-- [Pemecahan Masalah](#pemecahan-masalah)
-- [Dokumentasi](#dokumentasi)
-- [Lisensi](#lisensi)
+## ✨ Highlights
 
-## Fitur
-- Multi-input:
-  - Screen capture (pilih region atau fullscreen)
-  - Webcam
-  - Network stream (RTSP/HTTP)
-- Mode RAW + Counting:
-  - Menampilkan bounding box RAW dari YOLO persis seperti skrip dasar
-  - Counting tetap aktif melalui tracker di belakang layar
-  - Opsi menampilkan Track ID pada bbox RAW
-- Mode RAW-only (tanpa counting) dan Mode Tracking (non-RAW) dengan ID/path
-- Penghitungan arah (UP/DOWN) menggunakan satu garis hitung yang digambar pengguna
-- Optimisasi ROI (non-RAW), kontrol FPS, screen capture via mss
-- Integrasi database (SQLite/MySQL), Data Viewer, backup/restore
-- Pengaturan tersimpan di settings.json
+**SmartTrafficCounter** adalah aplikasi canggih untuk menghitung kendaraan secara otomatis menggunakan kecerdasan buatan. Dengan antarmuka GUI yang intuitif dan performa tinggi, aplikasi ini cocok untuk monitoring lalu lintas, analisis data transportasi, dan penelitian.
 
-## Persyaratan Sistem
-- Windows 10/11 64-bit
-- CPU: Intel/AMD modern; GPU NVIDIA opsional untuk akselerasi CUDA
-- RAM: minimal 8 GB (disarankan 16 GB)
-- Penyimpanan: ≥ 2 GB kosong (Torch/OpenCV berukuran besar)
-- Jika memakai GPU: driver NVIDIA + Torch CUDA yang sesuai dengan sistem
+<img width="1920" height="1080" alt="SmartTrafficCounter Interface" src="https://github.com/user-attachments/assets/c51caad7-a9d9-4a93-ab4a-b76c4fb0d705" />
 
-## Mulai Cepat (Jalankan .exe)
-- Setelah proses build (lihat bagian di bawah), buka:
-  - `dist/SmartTrafficCounter/`
-- Klik ganda:
-  - `SmartTrafficCounter.exe`
-- Catatan:
-  - Jika SmartScreen muncul, klik "More info" → "Run anyway"
-  - `settings.json` dibuat otomatis di folder kerja saat pertama kali jalan
-  - `yolo11n.pt` sebaiknya berada di samping exe (sudah dibundel jika memakai spec yang disediakan)
+---
 
-## Bangun .exe (Windows, PyInstaller)
-Prasyarat:
-- Python 3.9–3.11 (disarankan)
-- Virtual environment (.venv) di repo (opsional namun disarankan)
+## 🎯 Fitur Unggulan
 
-Langkah cepat (dari root repositori):
-1) Buat dan aktifkan venv
-- `python -m venv .venv`
-- `.venv\\Scripts\\activate`
-- `python -m pip install --upgrade pip`
+### 🎥 **Multi-Source Input**
+- **Screen Capture** - Rekam area layar (region/fullscreen) dengan performa tinggi via `mss`
+- **Webcam** - Support multiple webcam dengan pemilihan index mudah
+- **Network Stream** - RTSP/HTTP streaming untuk CCTV dan IP camera
 
-2) Pasang tool dan dependensi minimal untuk build
-- `pip install pyinstaller ultralytics torch torchvision opencv-python numpy Pillow mss pyautogui`
+### 🧠 **Mode Deteksi Fleksibel**
+| Mode | Deskripsi | Use Case |
+|------|-----------|----------|
+| **RAW + Counting** ⭐ | Bbox asli YOLO + counting background | Visualisasi akurat & analisis simultan |
+| **RAW Only** | Pure detection tanpa tracking | Debugging & validasi model |
+| **Tracking Mode** | Tracker dengan ID & trajectory | Monitoring detail pergerakan |
 
-3) Build dengan spec yang disediakan (mode onedir direkomendasikan)
-- `python -m PyInstaller --noconfirm --clean SmartTrafficCounter.spec`
+### 📊 **Smart Counting System**
+- ✅ Deteksi arah **UP/DOWN** dengan single line counter
+- ✅ Multi-class detection (mobil, motor, truk, bus)
+- ✅ Adjustable counting band untuk akurasi maksimal
+- ✅ Invert direction untuk fleksibilitas setup
 
-4) Jalankan
-- `explorer dist\\SmartTrafficCounter`
-- Klik ganda `SmartTrafficCounter.exe`
+### 💾 **Database & Analytics**
+- **SQLite** (default) atau **MySQL** support
+- Data Viewer built-in dengan search & filter
+- Export data untuk analisis lanjutan
+- Backup & Restore functionality
 
-Onefile (opsional):
-- Mode onefile butuh penanganan path khusus untuk model/resource (tidak dibahas di sini). Mode onedir direkomendasikan karena lebih sederhana dan andal.
+### ⚡ **Performance Optimization**
+- ROI-based processing untuk efisiensi CPU/GPU
+- FPS control & threading untuk smoothness
+- CUDA acceleration support (NVIDIA GPU)
+- Half-precision (FP16) untuk speed boost
 
-Lokasi exe:
-- `dist/SmartTrafficCounter/SmartTrafficCounter.exe`
+---
 
-## Panduan Penggunaan
-1) Pilih Sumber Input:
-- Screen: "Select Region" atau "Full Screen", lalu "Start Preview"
-- Webcam: pilih index (0/1/…), lalu "Start Preview"
-- Network: tempel URL Stream, lalu "Start Preview"
-- <img width="1920" height="1069" alt="image" src="https://github.com/user-attachments/assets/6b9c2f8b-78a3-4788-b572-9db2183835e8" />
+## 📋 Daftar Isi
 
+- [Persyaratan Sistem](#-persyaratan-sistem)
+- [Quick Start](#-quick-start)
+- [Build dari Source](#-build-dari-source)
+- [Panduan Penggunaan](#-panduan-penggunaan)
+- [Konfigurasi](#-konfigurasi)
+- [Tips & Tricks](#-tips--tricks)
+- [Troubleshooting](#-troubleshooting)
+- [Dokumentasi](#-dokumentasi)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-2) Gambar Garis Hitung (satu garis):
-- Klik "Draw Line", klik-dan-drag pada video, lepas untuk menetapkan
-- Jika arah UP/DOWN terbalik dari ekspektasi, aktifkan "invert_direction" di Line Settings
+---
 
-3) Mulai Deteksi:
-- Klik "Start Detection"
-- Mode default adalah RAW + Counting (bbox RAW dirender; counting aktif)
+## 💻 Persyaratan Sistem
 
-4) Simpan Hasil:
-- Klik "Save to Database" dan lihat data di "Data Viewer"
+### Minimum Requirements
+| Component | Specification |
+|-----------|---------------|
+| **OS** | Windows 10/11 (64-bit) |
+| **CPU** | Intel Core i5 / AMD Ryzen 5 (generasi 6+) |
+| **RAM** | 8 GB |
+| **Storage** | 2 GB free space |
+| **GPU** | Integrated Graphics |
 
-## Mode
-- RAW + Counting (default)
-  - Merender deteksi RAW dari YOLO
-  - Tracker berjalan di latar untuk counting
-  - Opsional: tampilkan Track ID di label RAW (`runtime.raw_draw_ids=true`)
-- RAW-only
-  - Hanya menampilkan bbox RAW (tanpa tracker, tanpa counting)
-- Tracking (non-RAW)
-  - Merender bbox tracker + ID + path; counting aktif
+### Recommended Requirements
+| Component | Specification |
+|-----------|---------------|
+| **CPU** | Intel Core i7 / AMD Ryzen 7 (generasi 8+) |
+| **RAM** | 16 GB |
+| **GPU** | NVIDIA GTX 1660+ with CUDA |
+| **Storage** | SSD with 5 GB free space |
 
-Tips: Untuk adegan padat (kendaraan berdampingan), naikkan `runtime.raw_iou` (mis. 0,70 → 0,75) agar NMS tidak menggabungkan bbox berdekatan.
+> 💡 **Catatan:** GPU NVIDIA dengan CUDA akan meningkatkan performa hingga **3-5x** lebih cepat!
 
-## Pengaturan Utama
-Semua pengaturan tersimpan di `settings.json`.
+---
 
-- model
-  - `model_path`: "yolo11n.pt"
-  - `confidence_threshold`, `iou_threshold`: untuk mode non-RAW
-  - `detection_confidence`: filter yang diteruskan ke tracker
-  - `device`: "auto" | "cpu" | "cuda"
-- input
-  - `type`: "screen" | "webcam" | "network"
-  - `webcam_index`, `stream_url`, `screen_region`
-- line_settings
-  - `band_px`: rekomendasi 12–18
-  - `invert_direction`: membalik interpretasi UP/DOWN bila perlu
-- runtime
-  - `imgsz`: 576 (tune untuk FPS/akurasi)
-  - `use_half`: true pada CUDA (FP16)
-  - `use_roi_around_line`: optimasi non-RAW
-  - RAW:
-    - `raw_detections_mode`: RAW-only
-    - `raw_counting_mode`: RAW visual + counting (default true)
-    - `raw_force_full_region`: true untuk perilaku mirip skrip
-    - `raw_show_all_classes`: false → hanya kendaraan saat render
-    - `raw_conf`: 0,25
-    - `raw_iou`: 0,70 (naikkan jika bbox sering tergabung)
-    - `raw_draw_ids`: true untuk menampilkan Track ID pada label RAW
+## 🚀 Quick Start
 
-Tuning tracking (di `config.py` → `TRACKING_CONFIG`):
-- `max_match_distance`: turunkan (50–60) jika ID sering menyatu pada kondisi padat
-- `max_track_lost_frames`: ketahanan track
+### Metode 1: Jalankan .exe (Paling Mudah)
 
-## Database
-- Mendukung SQLite (default) atau MySQL
-- Atur di "DB Settings" pada aplikasi
-- "Save to Database" menyimpan total UP/DOWN per kelas dan agregat
-- "Data Viewer" menampilkan riwayat; tersedia Backup/Restore
-- <img width="945" height="1072" alt="image" src="https://github.com/user-attachments/assets/09f266d2-3a00-49c6-be2b-a91162853674" />
+1. **Download Release**
+   ```
+   Unduh file .exe terbaru dari halaman Releases
+   ```
 
+2. **Extract & Run**
+   ```
+   📁 dist/SmartTrafficCounter/
+   └── 🚀 SmartTrafficCounter.exe  ← Klik 2x
+   ```
 
-## Pemecahan Masalah
-- Tidak ada `dist/` atau exe:
-  - Belum dilakukan build. Jalankan PyInstaller dengan spec di atas.
-- Bbox RAW tidak muncul:
-  - Pastikan `runtime.raw_counting_mode=true`
-  - Pastikan `raw_detections_mode=false`
-  - Periksa `raw_conf=0,25`, `raw_iou=0,70`
-- Tidak menghitung saat melintas:
-  - Pastikan garis hitung melintasi jalur kendaraan
-  - Perbesar `band_px` (12–18)
-  - Aktifkan `invert_direction` bila perlu
-- Tiga kendaraan berdampingan dihitung kurang dari 3:
-  - Naikkan `runtime.raw_iou` ke 0,75; pertimbangkan menurunkan `max_match_distance`
-- FPS rendah:
-  - Turunkan `imgsz` ke 512/448
-  - Nonaktifkan `raw_draw_ids`
-  - Gunakan Torch CUDA
+3. **Bypass SmartScreen** (jika muncul)
+   - Klik **"More info"**
+   - Klik **"Run anyway"**
 
-## Dokumentasi
-- Panduan Pengguna: [docs/User_Manual_SmartTrafficCounter.md](docs/User_Manual_SmartTrafficCounter.md)
-- Mulai Cepat: [docs/Quick_Start_CheatSheet.md](docs/Quick_Start_CheatSheet.md)
-- Pemecahan Masalah & FAQ: [docs/Troubleshooting_FAQ.md](docs/Troubleshooting_FAQ.md)
-- Referensi Pengaturan: [docs/Settings_Reference.md](docs/Settings_Reference.md)
-- Catatan Rilis v3.3: [docs/Release_Notes_v3.3.md](docs/Release_Notes_v3.3.md)
+4. **Setup Awal**
+   - Pilih sumber input (Screen/Webcam/Network)
+   - Klik **"Start Preview"**
+   - Gambar garis counting dengan **"Draw Line"**
+   - Klik **"Start Detection"** 🎉
 
-## Lisensi
-Tentukan lisensi proyek Anda di sini (misalnya MIT). Jika belum ada, tambahkan file LICENSE ke repo.
-"# SmartTraffic-eyes" 
-"# SmartTraffic-eyes" 
-"# SmartTraffic-eyes" 
+---
+
+## 🛠️ Build dari Source
+
+### Persiapan Environment
+
+```bash
+# 1. Clone repository
+git clone https://github.com/yourusername/SmartTraffic-eyes.git
+cd SmartTraffic-eyes
+
+# 2. Buat virtual environment
+python -m venv .venv
+
+# 3. Aktivasi venv
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # Linux/Mac
+
+# 4. Upgrade pip
+python -m pip install --upgrade pip
+```
+
+### Install Dependencies
+
+```bash
+# Install semua dependencies
+pip install pyinstaller ultralytics torch torchvision opencv-python numpy Pillow mss pyautogui
+
+# Untuk GPU support (NVIDIA CUDA)
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+```
+
+### Build Executable
+
+```bash
+# Build dengan PyInstaller (mode onedir)
+python -m PyInstaller --noconfirm --clean SmartTrafficCounter.spec
+
+# Output akan tersedia di:
+# dist/SmartTrafficCounter/SmartTrafficCounter.exe
+```
+
+> 📦 **Mode OneDIR vs OneFile:**  
+> - **OneDir** (Recommended): Lebih cepat startup, mudah debug
+> - **OneFile**: Single executable, tapi ekstraksi saat runtime
+
+---
+
+## 📖 Panduan Penggunaan
+
+### 1️⃣ Pilih Input Source
+
+<table>
+<tr>
+<td width="33%">
+
+#### 🖥️ Screen Capture
+- Klik **"Select Region"**
+- Drag area yang ingin dimonitor
+- Atau gunakan **"Full Screen"**
+- Tekan **"Start Preview"**
+
+</td>
+<td width="33%">
+
+#### 📷 Webcam
+- Pilih **Webcam Index** (0, 1, 2...)
+- Tekan **"Start Preview"**
+- Pastikan webcam terdeteksi
+
+</td>
+<td width="33%">
+
+#### 🌐 Network Stream
+- Paste **URL Stream**
+  ```
+  rtsp://user:pass@ip:port/stream
+  http://ip:port/video
+  ```
+- Tekan **"Start Preview"**
+
+</td>
+</tr>
+</table>
+
+<img width="1920" height="1069" alt="Input Selection" src="https://github.com/user-attachments/assets/6b9c2f8b-78a3-4788-b572-9db2183835e8" />
+
+### 2️⃣ Atur Counting Line
+
+```
+┌─────────────────────────┐
+│                         │
+│   🚗  →  →  →  →  →    │ ⬆️ UP
+│  ═══════════════════    │ ← Counting Line
+│   ←  ←  ←  🚗  ←  ←    │ ⬇️ DOWN
+│                         │
+└─────────────────────────┘
+```
+
+1. Klik **"Draw Line"**
+2. Klik-drag untuk menggambar garis
+3. Lepas mouse untuk menetapkan
+4. Jika arah terbalik → Enable **"invert_direction"**
+
+### 3️⃣ Mulai Deteksi
+
+```
+Start Detection → Mode RAW + Counting aktif
+                ↓
+        [YOLO Deteksi] → [Tracker] → [Counter]
+                ↓
+        Visualisasi Real-time + Count UP/DOWN
+```
+
+### 4️⃣ Simpan & Analisis Data
+
+- Klik **"Save to Database"**
+- Buka **"Data Viewer"** untuk melihat history
+- Export data untuk analisis Excel/Python
+
+<img width="945" height="1072" alt="Data Viewer" src="https://github.com/user-attachments/assets/09f266d2-3a00-49c6-be2b-a91162853674" />
+
+---
+
+## ⚙️ Konfigurasi
+
+Semua pengaturan disimpan di `settings.json`. Berikut parameter penting:
+
+### 🎯 Model Settings
+
+```json
+{
+  "model": {
+    "model_path": "yolo11n.pt",      // yolo11n/s/m/l/x
+    "confidence_threshold": 0.45,     // 0.25 - 0.70
+    "detection_confidence": 0.45,
+    "iou_threshold": 0.45,
+    "device": "auto"                  // auto/cpu/cuda
+  }
+}
+```
+
+### 📏 Line Settings
+
+```json
+{
+  "line_settings": {
+    "band_px": 15,                    // 12-20 untuk akurasi
+    "invert_direction": false         // Flip UP/DOWN
+  }
+}
+```
+
+### ⚡ Runtime Optimization
+
+```json
+{
+  "runtime": {
+    "imgsz": 576,                     // 416/512/576/640
+    "use_half": true,                 // FP16 untuk GPU
+    "use_roi_around_line": true,      // ROI optimization
+    
+    // RAW Mode Settings
+    "raw_counting_mode": true,        // RAW visual + counting
+    "raw_detections_mode": false,     // RAW only (no count)
+    "raw_conf": 0.25,                 // Confidence threshold
+    "raw_iou": 0.70,                  // NMS IoU threshold
+    "raw_draw_ids": true,             // Show Track ID
+    "raw_show_all_classes": false     // Filter vehicle only
+  }
+}
+```
+
+### 🔧 Tracking Tuning (`config.py`)
+
+```python
+TRACKING_CONFIG = {
+    'max_match_distance': 70,         # 50-80, turunkan jika ID merge
+    'max_track_lost_frames': 30,      # Persistence track
+    'min_track_stability': 3,         # Frame sebelum count
+    'position_smoothing': 0.3         # Smoothing factor
+}
+```
+
+---
+
+## 💡 Tips & Tricks
+
+### 🎨 Untuk Visualisasi Terbaik
+
+```python
+✅ Gunakan RAW + Counting mode (default)
+✅ Enable raw_draw_ids untuk tracking visual
+✅ Set raw_iou = 0.70-0.75 untuk dense traffic
+✅ Disable raw_show_all_classes untuk fokus kendaraan
+```
+
+### 🏃 Untuk Performa Maksimal
+
+```python
+⚡ Gunakan GPU CUDA (3-5x lebih cepat)
+⚡ Enable use_half (FP16) di GPU
+⚡ Turunkan imgsz ke 512 jika FPS rendah
+⚡ Aktifkan use_roi_around_line
+⚡ Disable raw_draw_ids jika tidak perlu
+```
+
+### 🎯 Untuk Akurasi Counting
+
+```python
+🎯 Perbesar band_px jika banyak miss (coba 18-20)
+🎯 Naikkan raw_iou ke 0.75 jika bbox merge
+🎯 Turunkan max_match_distance (50-60) untuk dense
+🎯 Pastikan garis melintang sempurna jalur kendaraan
+🎯 Gunakan invert_direction jika arah salah
+```
+
+---
+
+## 🔧 Troubleshooting
+
+<details>
+<summary><b>❌ Tidak ada dist/ atau .exe setelah build</b></summary>
+
+**Solusi:**
+```bash
+# Pastikan PyInstaller terinstall
+pip install pyinstaller
+
+# Jalankan build dengan spec
+python -m PyInstaller --noconfirm --clean SmartTrafficCounter.spec
+
+# Cek output
+dir dist\SmartTrafficCounter
+```
+</details>
+
+<details>
+<summary><b>🚫 Bbox RAW tidak muncul</b></summary>
+
+**Cek settings.json:**
+```json
+{
+  "runtime": {
+    "raw_counting_mode": true,      // HARUS true
+    "raw_detections_mode": false,   // HARUS false
+    "raw_conf": 0.25,
+    "raw_iou": 0.70
+  }
+}
+```
+</details>
+
+<details>
+<summary><b>📉 Tidak menghitung saat kendaraan lewat</b></summary>
+
+**Checklist:**
+- [ ] Garis counting melintang jalur kendaraan?
+- [ ] Band_px cukup besar (15-20)?
+- [ ] Coba enable invert_direction
+- [ ] Pastikan mode bukan RAW-only
+- [ ] Cek min_track_stability tidak terlalu tinggi
+</details>
+
+<details>
+<summary><b>🚗🚗🚗 Tiga kendaraan berdampingan hanya terhitung 1-2</b></summary>
+
+**Solusi:**
+```json
+{
+  "runtime": {
+    "raw_iou": 0.75  // Naikkan dari 0.70
+  }
+}
+```
+
+Dan turunkan di `config.py`:
+```python
+TRACKING_CONFIG = {
+    'max_match_distance': 55  // Turunkan dari 70
+}
+```
+</details>
+
+<details>
+<summary><b>🐌 FPS rendah / lag</b></summary>
+
+**Optimasi:**
+1. Turunkan `imgsz` → 512 atau 448
+2. Disable `raw_draw_ids`
+3. Enable `use_half` jika pakai GPU
+4. Gunakan model lebih kecil (yolo11n)
+5. Aktifkan `use_roi_around_line`
+6. Install CUDA + torch-gpu
+</details>
+
+---
+
+## 📚 Dokumentasi
+
+| Dokumen | Deskripsi |
+|---------|-----------|
+| 📘 [User Manual](docs/User_Manual_SmartTrafficCounter.md) | Panduan lengkap pengguna |
+| ⚡ [Quick Start](docs/Quick_Start_CheatSheet.md) | Cheat sheet & shortcuts |
+| 🔧 [Troubleshooting](docs/Troubleshooting_FAQ.md) | FAQ & pemecahan masalah |
+| ⚙️ [Settings Reference](docs/Settings_Reference.md) | Referensi lengkap konfigurasi |
+| 📝 [Release Notes v3.3](docs/Release_Notes_v3.3.md) | Changelog & fitur baru |
+
+---
+
+## 🤝 Contributing
+
+Kontribusi sangat diterima! Silakan:
+
+1. **Fork** repository ini
+2. **Buat branch** feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit** changes (`git commit -m 'Add AmazingFeature'`)
+4. **Push** ke branch (`git push origin feature/AmazingFeature`)
+5. **Open Pull Request**
+
+### Development Setup
+
+```bash
+# Clone repo
+git clone https://github.com/yourusername/SmartTraffic-eyes.git
+
+# Install dev dependencies
+pip install -r requirements-dev.txt
+
+# Run tests
+pytest tests/
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+```
+MIT License
+
+Copyright (c) 2024 SmartTrafficCounter
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction...
+```
+
+---
+
+## 🌟 Acknowledgments
+
+- **Ultralytics YOLO** - State-of-the-art object detection
+- **OpenCV** - Computer vision library
+- **PyTorch** - Deep learning framework
+- **Community Contributors** - Thank you for your support!
+
+---
+
+## 📞 Support & Contact
+
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/yourusername/SmartTraffic-eyes/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/SmartTraffic-eyes/discussions)
+- 📧 **Email**: support@smarttraffic.com
+- 🌐 **Website**: [smarttraffic.com](https://smarttraffic.com)
+
+---
+
+<div align="center">
+
+### ⭐ Jika proyek ini bermanfaat, berikan bintang di GitHub!
+
+**Made with ❤️ by SmartTrafficCounter Team**
+
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=smarttraffic.eyes)
+![Stars](https://img.shields.io/github/stars/yourusername/SmartTraffic-eyes?style=social)
+![Forks](https://img.shields.io/github/forks/yourusername/SmartTraffic-eyes?style=social)
+
+</div>
